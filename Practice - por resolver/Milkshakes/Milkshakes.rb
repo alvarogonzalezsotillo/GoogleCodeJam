@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-require "./GoogleCodeJam" #no va en windows
+require "./GoogleCodeJam"
 ####################################################################################
 #
 # PROBLEM (JUST IN CASE THERE IS GLOBAL DATA)
@@ -71,20 +71,20 @@ class GCJCase < GCJCase_Base
       end
       satisfiedCustomers.count(true)    
 	end
-		
-	def try_to_solve( flavors ) #array of flavors, true (malted), false (unmalted) or nil (not prepared)
-      return flavors if count_satisfied_customers(flavors) == customers.length
-	  
-	  for i in (0...flavors.length) do
-      next if flavors[i] != nil
-	    # PROBAR PRIMERO CON UNMALTED, LUEGO CON MALTED
-      newFlavors = Array.new(flavors)
-      
-	  end
+
+    # CUENTO LOS SABORES QUE REALMENTE GUSTAN, POR SI SOBRAN EN EL ENUNCIADO
+	def ensureEveryFlavorNeeded()
+      coveredFlavors = Array.new(flavors, false)
+      customers.each{ |customer|
+        customer.each{ |flavor|
+          coveredFlavors[flavor.flavor] = true
+        }
+      }
+      raise "Some flavors not needed: #{coveredFlavors}" if coveredFlavors.count(true) != flavors
 	end  
 	  
 	def solve
-	  
+	  ensureEveryFlavorNeeded()  
 	  @solution = customers.to_s
 	  self
 	end
