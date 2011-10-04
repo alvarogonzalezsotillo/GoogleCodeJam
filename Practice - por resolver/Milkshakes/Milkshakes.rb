@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-require 'GoogleCodeJam'
+require "GoogleCodeJam" #no va en windows
 ####################################################################################
 #
 # PROBLEM (JUST IN CASE THERE IS GLOBAL DATA)
