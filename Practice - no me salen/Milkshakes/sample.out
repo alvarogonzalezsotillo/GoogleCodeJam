@@ -1,0 +1,2 @@
+Case #1: #<struct Struct::Milkshake flavor=1, malted=true>#<struct Struct::Milkshake flavor=1, malted=false>#<struct Struct::Milkshake flavor=2, malted=false>#<struct Struct::Milkshake flavor=5, malted=false>
+Case #2: #<struct Struct::Milkshake flavor=1, malted=false>#<struct Struct::Milkshake flavor=1, malted=true>
