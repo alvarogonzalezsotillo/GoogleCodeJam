@@ -66,15 +66,17 @@ class GCJProblem_Base
   # ALSO PRINT THE TIMING
   #
   def solve( ioin=$ioin,ioout=$ioout )
-    start_of_problem = Time.now.to_i
+    start_of_problem = Time.now.to_f
     for index in (1 .. n) do
-      start_of_case = Time.now.to_i
+      start_of_case = Time.now.to_f
       gcjcase = GCJCase.new(index,self)
       gcjcase.read(ioin).solve.dumpSolution(ioout)
-      $iolog.puts( "case #{index} Elapsed:#{Time.now.to_i-start_of_case} seconds" )
+      $iolog.puts( "case #{index} Elapsed:#{(1000*(Time.now.to_r-start_of_case)).to_i} ms" )
     end
-    seconds = Time.now.to_i - start_of_problem
-    $iolog.puts( "Elapsed: #{seconds/60}:#{seconds%60}" )
+    seconds = Time.now.to_f - start_of_problem
+    seconds = seconds.to_i
+    $iolog.printf( "File total: %i:%02i", seconds/60, seconds%60 )
+    $iolog.puts
   end
 end
 
@@ -84,11 +86,11 @@ end
 class GCJProblems
 
   #
-  # SOLVE ONE PROBLEM FILE, FROM STDIN (REDIRECTED)
+  # SOLVE ONE PROBLEM FILE, FROM STDIN (REDIRECTED OR WITH "-" PARAMETER)
   # OR SOLVE SEVERAL PROBLEM FILES, ENDING WITH ".in"
   #
   def solve
-    if $stdin.tty?
+    if $stdin.tty? && ARGV.length == 0
       solveFiles
     else
       GCJProblem.new.read.solve
@@ -100,19 +102,17 @@ class GCJProblems
   #
   def solveFiles(dir=".")
     Dir.foreach(dir){ |file|
-      catch(:not_an_in_file) do
-        throw :not_an_in_file unless file.upcase.end_with? ".IN"
-        
-        filenameIn = file
-        filenameOut = file.gsub( /in$/i, "out" )
-        
-        ioin = File.new(filenameIn,"r")
-        ioout = File.new(filenameOut, "w")
-        $iolog.puts( "Procesing #{filenameIn} into #{filenameOut}" )
-        GCJProblem.new.read(ioin).solve(ioin,ioout)
-        ioin.close
-        ioout.close 
-      end
+      next unless file.upcase.end_with? ".IN"
+      
+      filenameIn = file
+      filenameOut = file.gsub( /in$/i, "out" )
+      
+      ioin = File.new(filenameIn,"r")
+      ioout = File.new(filenameOut, "w")
+      $iolog.puts( "\nProcesing #{filenameIn} into #{filenameOut}" )
+      GCJProblem.new.read(ioin).solve(ioin,ioout)
+      ioin.close
+      ioout.close 
     }
   end
 end
