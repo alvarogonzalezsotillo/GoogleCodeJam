@@ -22,9 +22,7 @@ class GCJProblem < GCJProblem_Base
     super
     self
   end
-  
-  #def log(s)
-  #end
+
 end
 
 ####################################################################################
@@ -57,22 +55,47 @@ class GCJCase < GCJCase_Base
 
       # ENSURE a IS BIGGER THAN b
       (a,b) = [b,a] if a < b
-      log( "a: #{a}  b: #{b}  firstPlayer:#{firstPlayer}")
+      ##log( "a: #{a}  b: #{b}  firstPlayer:#{firstPlayer}")
     
       # COMPUTE POSSIBLE NEXT MOVES
-      log( "a/b #{a/b}" )
-      log( "(a/b).floor #{(a/b).floor}" )
-      aSmall = a - b*((a/b).floor)
-      aBig = a - b*((a/b).floor-1)
-      log( "  aBig: #{aBig}  aSmall: #{aSmall}" )
+      greatestBite = ( a/b ).floor
+      canReachZero = (a % b) == 0
+
+      #log( "  greatestBite: #{greatestBite}" )
+      #log( "  canReachZero: #{canReachZero}" )
+
+      if greatestBite > 1 && canReachZero
+        aSmall = a - b*(greatestBite-1)
+        aBig = a - b*(greatestBite-2)
+      elsif greatestBite > 1 && !canReachZero
+        aSmall = a - b*greatestBite
+        aBig = a - b*(greatestBite-1)
+      elsif greatestBite <= 1 && canReachZero
+        aSmall = a - b*greatestBite
+        aBig = aSmall
+      elsif greatestBite <= 1 && !canReachZero
+        aSmall = a - b*greatestBite
+        aBig = aSmall
+      end
+      #log( "  aBig: #{aBig}  aSmall: #{aSmall}" )
+
+      thereIsChoice = aBig != aSmall
+      #log( "  thereIsChoice: #{thereIsChoice}" )
       
-      # IF THERE IS A MOVE WITH NO OPTION FOR THE PLAYER, HE LOOSES
+      # IF THERE IS CHOICE FOR FIRST PLAYER, HE WINS
+      return firstPlayer if thereIsChoice
+      
+      # IF 0 IS REACHED, THAT PLAYER LOOSES
       return !firstPlayer if aSmall <= 0
       
       # PREPARE NUMBERS FOR NEXT ROUND
       firstPlayer = !firstPlayer
-      b = a
-      a = aSmall
+      if thereIsChoice
+        b = a
+        a = aSmall
+      else
+        a = aSmall
+      end
     end
     
   end
