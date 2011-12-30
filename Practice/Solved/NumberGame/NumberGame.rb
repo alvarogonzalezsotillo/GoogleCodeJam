@@ -11,7 +11,7 @@ class GCJProblem < GCJProblem_Base
   #
   #
   def initialize
-    super
+    super(2)
   end
   
   #
@@ -198,22 +198,28 @@ b2####
   def estimate_first_after_diagonal(a)
     hint = (a*constant()).ceil
     # CHANCHULLO FACTOR: SOMETIMES THE PRECISSION IS NOT ENOUGH
-    return hint-1 if compute_first_win(a,hint-1)
+    # return hint-1 if compute_first_win(a,hint-1)
     hint
   end
 
   def estimate_last_before_diagonal(a)
     hint = (a/constant()).ceil - 1
     # CHANCHULLO FACTOR: SOMETIMES THE PRECISSION IS NOT ENOUGH
-    return hint+1 if compute_first_win(a,hint+1)
+    # return hint+1 if compute_first_win(a,hint+1)
     hint
   end
 
   
   def constant()
     return @@constant if @@constant != nil
-    big_big_number = INFINITE
-    @@constant = Rational(compute_first_after_diagonal(big_big_number),big_big_number)
+    sum = 0
+    for i in ( 100000..100099 ) do
+      sum += 1.0*compute_first_after_diagonal(i)/i
+    end
+    @@constant = sum /= 100
+    
+    # I READ THE SOLUTION: THIS NUMBER IS THE GOLDEN RATIO
+    @@constant = (1+Math.sqrt(5))/2
   end
 
   def display_constant_up_to(size)
@@ -252,4 +258,4 @@ end
 #GCJCase.new( nil, nil ).compute_constant_up_to(60)
 #GCJCase.new( nil, nil ).check_constant(43784-10, 43784+10)
 
-GCJProblems.new.solve
+GCJProblems.new(2).solve
