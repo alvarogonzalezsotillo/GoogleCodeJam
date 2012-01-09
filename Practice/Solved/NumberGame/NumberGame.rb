@@ -11,7 +11,7 @@ class GCJProblem < GCJProblem_Base
   #
   #
   def initialize
-    super(2)
+    super(4)
   end
   
   #
@@ -258,4 +258,4 @@ end
 #GCJCase.new( nil, nil ).compute_constant_up_to(60)
 #GCJCase.new( nil, nil ).check_constant(43784-10, 43784+10)
 
-GCJProblems.new(2).solve
+GCJProblems.new.solve

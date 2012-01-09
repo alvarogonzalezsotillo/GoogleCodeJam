@@ -1,6 +1,8 @@
 #!/usr/bin/ruby
 require 'matrix'
 require 'set'
+require 'thread'
+require 'rational'
 
 
 $ioin = $stdin
@@ -138,7 +140,7 @@ class GCJProblem_Base
   def solve_one_case( gcjcase )
       start_of_case = Time.now.to_f
       gcjcase.solve
-      $iolog.puts( "case #{gcjcase.index} Elapsed:#{(1000*(Time.now.to_r-start_of_case)).to_i} ms" )
+      $iolog.puts( "case #{gcjcase.index} Elapsed:#{(1000*(Time.now.to_f-start_of_case)).to_i} ms" )
   end
   
 end
