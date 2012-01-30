@@ -1,0 +1,21 @@
+12212
+
+
+N=4
+
+2 4 3 1
+a b c d
+
+(a) (b) 1  a < b
+
+(c) (d) 2  c > d
+
+(a b) (d c)  2  a > d
+
+d (a b) (c)  1  a < c
+
+d a (b) (c) 2 b > c
+
+
+1 2 3 4
+d a c b
