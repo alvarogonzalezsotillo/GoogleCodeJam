@@ -7,10 +7,52 @@ require "./HackerCup"
 #
 class GCJProblem < GCJProblem_Base
 
+  Cached_posibilities = {}
+
+  def posibilities_impl(rows,columns)
+    return posibilities_impl(columns,rows) if columns < rows
+    return 1 if rows <= 1 || columns <= 1
+    
+    key = [rows,columns]
+    cached = Cached_posibilities[key]
+    return cached if cached != nil
+    
+    right = posibilities_impl(rows, columns-1)
+    top = posibilities_impl(rows-1,columns)
+    
+    cached = right + top
+    Cached_posibilities[key] = cached
+    
+    return cached
+  end
+  
+  def posibilities(rows,columns)
+    log "posibilities #{rows},#{columns}"
+    posibilities_impl(rows,columns)
+  end
+
+
+  def compute_posibilities_array
+    max_s = 10000000
+    posibilities_array = []
+    cols = 1
+    loop do
+      rows = 1
+      break if posibilities(rows,cols) > max_s
+      begin
+        pos = posibilities(rows,cols)
+        posibilities_array << [rows,cols,pos]
+        rows += 1
+      end while pos <= max_s
+      cols += 1
+    end
+  end
+
   #
   #
   #
   def initialize
+    compute_posibilities_array
     super
   end
   
@@ -39,52 +81,6 @@ class GCJCase < GCJCase_Base
     self
   end
 
-  def factorize(orig)
-      factors = {}
-      factors.default = 0     # return 0 instead nil if key not found in hash
-      n = orig
-      i = 2
-      sqi = 4                 # square of i
-      while sqi <= n do
-          while n.modulo(i) == 0 do
-              n /= i
-              factors[i] += 1
-              # puts "Found factor #{i}"
-          end
-          # we take advantage of the fact that (i +1)**2 = i**2 + 2*i +1
-          sqi += 2 * i + 1
-          i += 1
-      end
-      
-      if (n != 1) && (n != orig)
-          factors[n] += 1
-      end
-      factors
-  end
-
-  def posibilities_impl(rows,columns)
-    return posibilities_impl(columns,rows) if columns < rows
-    return 1 if rows <= 1 || columns <= 1
-    
-    key = [rows,columns]
-    cached = Cached_posibilities[key]
-    return cached if cached != nil
-    
-    right = posibilities_impl(rows, columns-1)
-    top = posibilities_impl(rows-1,columns)
-    
-    cached = right + top
-    Cached_posibilities[key] = cached
-    
-    return cached
-  end
-  
-  def posibilities(rows,columns)
-    ret = posibilities_impl(rows,columns)
-    #log "                posibilities #{rows},#{columns}: #{ret}"
-    ret
-  end
-  
   def solve_brute_force
     # HIPOTESIS: GRID IS ALMOST A RECTANGLE
     # HIPOTESIS: CHECKPOINT IS ABOUT THE CENTER OF THE RECTANGLE
@@ -103,9 +99,6 @@ class GCJCase < GCJCase_Base
         # SIMETRY: ROWS ALLWAYS LESS OR EQUAL THAN COLS
         next if rows > cols
         
-        # LAME OPTIMIZATION: ENSURE ENOUGTH ROOM
-        # next if posibilities(rows,cols) < s
-        
         for checkpoint_row in (1..rows) do
           for checkpoint_col in (1..cols) do
             
@@ -115,8 +108,8 @@ class GCJCase < GCJCase_Base
 
             #log "      checkpoint:#{checkpoint_row},#{checkpoint_col}"
             
-            posibilities_to_checkpoint = posibilities(checkpoint_row,checkpoint_col)
-            posibilities_to_goal = posibilities(rows-checkpoint_row+1,cols-checkpoint_col+1)
+            posibilities_to_checkpoint = problem.posibilities(checkpoint_row,checkpoint_col)
+            posibilities_to_goal = problem.posibilities(rows-checkpoint_row+1,cols-checkpoint_col+1)
             hint = posibilities_to_checkpoint * posibilities_to_goal
             
             #log "      posibilities_to_checkpoint:#{posibilities_to_checkpoint}"
