@@ -73,17 +73,15 @@ class GCJCase < GCJCase_Base
 
 
   def how_many_recycled( n, b )
-    ret = 0
-    #l = []
+    l = {}
     ns = n.to_s
     (ns.length-1).times{
       ns = ns[-1] + ns[0...-1]
       m = ns.to_i
-      ret += 1 if m > n && m <= b
-      #l << m if m > n && m <= b
+      l[m] = true if m > n && m <= b
     }
     #log "#{n}: #{l.to_s}"
-    ret
+    l.length
   end
   
   def solve_hacker(a,b)
