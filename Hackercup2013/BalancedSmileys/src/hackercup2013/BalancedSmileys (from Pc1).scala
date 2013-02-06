@@ -2,8 +2,7 @@ package hackercup2013
 
 import java.io._
 import scala.util.Random
-import leo.Leo
-import scala.annotation.tailrec
+
 
 object BalancedSmileys extends App {
     /**
@@ -16,6 +15,8 @@ object BalancedSmileys extends App {
                 reader.readLine()
         )
     }
+    
+    def ∞[T](a: Array[T]) = a
 
     /**
      * DUMPS SOLUTION IN THE USUAL FORMAT
@@ -102,40 +103,71 @@ object BalancedSmileys extends App {
         if( matchSmileys( in(0).toList ) ) "YES" else "NO"
     }
 
-
     def solveOneBalancedSmileys( in: LoadedTest ): String = {
-        def s( list: List[Char], open: Int = 0, smiley: Int = 0, frowny: Int = 0 ): Boolean = {
+//        println( "**************************" )
+        var open = 0
+        var smiley = 0
+        var frowny = 0
+        val iterator = in(0).iterator
+        var ret = true
 
-            if( open < 0 ) false
-            else if( frowny < 0 ) false
-            else list match{
-                case Nil => smiley - open >= 0
-                case ':' :: ')' :: x => s( x, open, (smiley+1).min(open), frowny )
-                case ':' :: '(' :: x => s( x, open, smiley, frowny+1 )
-                case '(' :: x => s( x, open+1, smiley, frowny )
-                case ')' :: x =>
+        while( ret && iterator.hasNext ){
+
+            val c = iterator.next
+//        	println( c )
+        	c match {
+	            case '(' =>
+	                open += 1
+	            case ')' =>
 	                if( open > 0 ){
-	                    s( x, open-1, smiley.min(open-1), frowny )
+	                    open -= 1
+	                    smiley = smiley.min(open)
+	                }
+	                else if( frowny > 0 ){
+	                    frowny -= 1
 	                }
 	                else{
-	                    s( x, open, smiley, frowny-1 )
+	                    ret = false
 	                }
-                case c :: x => s( x, open, smiley, frowny )
-            }
+	            case ':' =>
+	                if( iterator.hasNext ){
+	                    var cc = iterator.next
+	                    while( cc == ':' && iterator.hasNext ){
+//	                       	println( cc )
+	                        cc = iterator.next
+	                    }
+//	                    println( cc )
+	                    cc match {
+		                    case ')' =>
+		                        smiley += 1
+		                        smiley = smiley.min(open)
+		                    case '(' =>
+		                        frowny += 1
+		                    case _ =>
+	                    }
+	                }
+	            case _ =>
+	        }
+
+   	        //println( "  open:" + open + "  smiley:" + smiley + "  frowny:" + frowny )
+
         }
 
-        if( s( in(0).toList ) ) "YES" else "NO"
+        if( smiley-open < 0 ){
+            ret = false
+        }
+
+        if(ret) "YES" else "NO"
     }
 
     def test() = {
 	    val r = new Random(1)
 
 	    def randomTestCase(n:Int ): String = {
-	        def randomChar = r.nextInt(4) match{
+	        def randomChar = r.nextInt(3) match{
 	        	case 0 => ':'
 	        	case 1 => '('
 	        	case 2 => ')'
-	        	case 3 => 'a'
 	        }
 
 	        n match {
@@ -143,25 +175,21 @@ object BalancedSmileys extends App {
 	            case i => randomChar + randomTestCase( i-1 )
 	        }
 	    }
-
 	    for( i <- 1 to 100000 ){
 	        var t = randomTestCase(20)
 	        var s1 = solveOneBalancedSmileys( Array(t) )
 	        var s2 = solveOneBalancedSmileys_lammer( Array(t) )
-	        var s3 = if(Leo.isBalanced(0,t)) "YES" else "NO"
-	        println( t + " -- " + s1 + "," + s2 + "," + s3)
-	        if( !(s1 == s2) || !(s1 == s3) ){
+	        println( t + " -- " + s1 + "," + s2 )
+	        if( !(s1 == s2) ){
 	            throw new IllegalStateException();
 	        }
 	    }
     }
 
-    test()
-
-//    // LAUNCHS IT ALL
-//    val problem = solveOneFile( process(readOneBalancedSmileys)(solveOneBalancedSmileys) )_
-//    problem("BalancedSmileys.sample.in")
-//    problem("balanced_smileystxt.txt.in")
+    // LAUNCHS IT ALL
+    val problem = solveOneFile( process(readOneBalancedSmileys)(solveOneBalancedSmileys) )_
+    problem("BalancedSmileys.sample.in")
+    problem("balanced_smileystxt.txt.in")
 
 
 
