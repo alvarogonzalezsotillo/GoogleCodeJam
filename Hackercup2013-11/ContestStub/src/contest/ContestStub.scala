@@ -3,7 +3,7 @@ package contest
 trait ContestStub{
   import java.io._
 
-  type Solution
+  type Solution = String
   type Solutions = scala.collection.GenSeq[Solution]
   type LoadedTest = Array[String]
 
