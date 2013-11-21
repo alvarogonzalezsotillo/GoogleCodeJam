@@ -47,7 +47,7 @@ trait ContestStub{
 
   private[this] def readTests( in: LineIterator ) = {
     val numberOfTests = readHeader(in)
-    for( t <- 1 to numberOfTests ) yield readOneTest(in)
+    for( t <- 1 to numberOfTests ) yield extractOneTest(in)
   }
 
   private[this] def solveTests( loadedTests: Seq[LoadedTest], parallel: Boolean ) : Solutions = {
@@ -82,7 +82,7 @@ trait ContestStub{
   }
 
 
-  def readOneTest( lineIterator: LineIterator ) : LoadedTest
+  def extractOneTest( lineIterator: LineIterator ) : LoadedTest
   def solveOneTest( loadedTest: LoadedTest) : Solution
 
   def solver(parallel: Boolean = true) = solveOneFile(parallel) _
