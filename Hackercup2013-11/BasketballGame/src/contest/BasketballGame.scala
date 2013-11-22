@@ -10,7 +10,7 @@ package contest
 object BasketballGame extends App with ContestStub{
 
 
-  solveAll()
+  solveAll("BasketballGame")
 
   def extractOneTest(lineIterator: LineIterator): LoadedTest = {
     val header = lineIterator.next
@@ -42,7 +42,12 @@ object BasketballGame extends App with ContestStub{
     playersSortedByDraft.zipWithIndex.foreach{ case (player,index) => player.draftNumber = index+1 }
     
     
-    def play( playersSortedByDraft: Iterable[Player] ) = {
+    def play( playersSortedByDraft: Iterable[Player] ) : List[Player] = {
+
+      if( playersSortedByDraft.size == p ){
+        return playersSortedByDraft.toList
+      }
+
       val playersOnCourt = new collection.mutable.HashSet ++ playersSortedByDraft.take(p).toSet
       val playersOnBench = new collection.mutable.HashSet ++ playersSortedByDraft.drop(p).toSet
       
@@ -68,7 +73,7 @@ object BasketballGame extends App with ContestStub{
         playersOnBench += playerOut
         playersOnBench -= playerIn
         
-        log( s"$rotation: out:$playerOut in:$playerIn onCourt:${playersOnCourt.mkString}" )
+        log( s"$rotation: out:$playerOut in:$playerIn onCourt:${playersOnCourt.mkString(" ")}  onBench:${playersOnBench.mkString(" ")}" )
       }
       
       playersOnCourt.toList

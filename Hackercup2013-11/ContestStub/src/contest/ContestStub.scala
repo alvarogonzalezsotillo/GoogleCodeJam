@@ -63,7 +63,7 @@ trait ContestStub{
     log("FILE:" + new File(file).getAbsoluteFile )
     val initTime = System.currentTimeMillis
 
-    val is =   new FileInputStream(file)
+    val is = new FileInputStream(file)
     val in = inputStream2LineInterator(is)
     val tests = readTests(in)
     val solutions = solveTests(tests,parallel)
@@ -91,6 +91,6 @@ trait ContestStub{
 
   def solveAll( path: String = ".", parallel: Boolean = true ) = {
     val dir = new File(path)
-    dir.list.filter( _.endsWith(".in") ).map(solver(parallel))
+    dir.listFiles.map( _.toString).filter( _.endsWith(".in") ).map(solver(parallel))
   }
 }
