@@ -41,36 +41,45 @@ object BasketballGame extends App with ContestStub{
     }
     playersSortedByDraft.zipWithIndex.foreach{ case (player,index) => player.draftNumber = index+1 }
     
-    val playersOnCourt = new collection.mutable.HashSet ++ playersSortedByDraft.take(p).toSet
-    val playersOnBench = new collection.mutable.HashSet ++ playersSortedByDraft.drop(p).toSet
     
-    for( rotation <- 1 to m if p < players.size ){
-      playersOnCourt.foreach( _.timePlayed += 1 )
+    def play( playersSortedByDraft: Iterable[Player] ) = {
+      val playersOnCourt = new collection.mutable.HashSet ++ playersSortedByDraft.take(p).toSet
+      val playersOnBench = new collection.mutable.HashSet ++ playersSortedByDraft.drop(p).toSet
       
-      val playerOut = playersOnCourt.foldLeft(playersOnCourt.head){ (p1,p2) =>
-        if( p1.timePlayed > p2.timePlayed ) p1
-        else if( p1.timePlayed < p2.timePlayed ) p2
-        else if( p1.draftNumber < p2.draftNumber ) p2
-        else p1
+      for( rotation <- 1 to m if p < players.size ){
+        playersOnCourt.foreach( _.timePlayed += 1 )
+        
+        val playerOut = playersOnCourt.foldLeft(playersOnCourt.head){ (p1,p2) =>
+          if( p1.timePlayed > p2.timePlayed ) p1
+          else if( p1.timePlayed < p2.timePlayed ) p2
+          else if( p1.draftNumber < p2.draftNumber ) p2
+          else p1
+        }
+        
+        val playerIn = playersOnBench.foldLeft(playersOnBench.head){ (p1,p2) =>
+          if( p1.timePlayed < p2.timePlayed ) p1
+          else if( p1.timePlayed > p2.timePlayed ) p2
+          else if( p1.draftNumber < p2.draftNumber ) p1
+          else p2
+        }
+        
+        playersOnCourt -= playerOut
+        playersOnCourt += playerIn
+        playersOnBench += playerOut
+        playersOnBench -= playerIn
+        
+        log( s"$rotation: out:$playerOut in:$playerIn onCourt:${playersOnCourt.mkString}" )
       }
       
-      val playerIn = playersOnBench.foldLeft(playersOnBench.head){ (p1,p2) =>
-        if( p1.timePlayed < p2.timePlayed ) p1
-        else if( p1.timePlayed > p2.timePlayed ) p2
-        else if( p1.draftNumber < p2.draftNumber ) p1
-        else p2
-      }
-      
-      playersOnCourt -= playerOut
-      playersOnCourt += playerIn
-      playersOnBench += playerOut
-      playersOnBench -= playerIn
-      
-      log( s"$rotation: out:$playerOut in:$playerIn onCourt:${playersOnCourt.mkString}" )
+      playersOnCourt.toList
     }
     
-    playersOnCourt.toArray.sortBy( _.name ).mkString(" ")
+    val team1 = playersSortedByDraft.zipWithIndex.filter( _._2 % 2 == 0 ).map( _._1 )
+    val team2 = playersSortedByDraft.zipWithIndex.filter( _._2 % 2 == 1 ).map( _._1 )
+
+    val playersOnCourt = play(team1) ::: play(team2)
     
+    playersOnCourt.map( _.name ).sorted.mkString( " " )
   }
 }
 
