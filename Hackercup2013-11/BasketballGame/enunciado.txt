@@ -1,4 +1,4 @@
-A group of N high school students wants to play a basketball game. To divide themselves into two teams they first rank all the players in the following way:
+A group of N high school students wants to computePlayersOnCourt a basketball game. To divide themselves into two teams they first rank all the players in the following way:
 
 Players with a higher shot percentage are rated higher than players with a lower shot percentage.
 If two players have the same shot percentage, the taller player is rated higher.
