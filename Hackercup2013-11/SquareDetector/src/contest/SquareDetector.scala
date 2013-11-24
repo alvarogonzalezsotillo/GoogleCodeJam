@@ -8,7 +8,50 @@ object SquareDetector extends App with ContestStub{
   }
 
 
+
   def solveOneTest(t: LoadedTest): Solution = {
+    val ret1 = solveOneTest_9n2(t)
+    val ret2 = solveOneTest_2n2(t)
+    assert( ret1 == ret2 )
+    ret2
+  }
+
+  def solveOneTest_2n2(t:LoadedTest): Solution = {
+
+    implicit class PairToCoordinate( val p: (Int,Int) ){
+      def row = p._1
+      def col = p._2
+      def value = if( row < 0 || col < 0 || row >= t.size || col >= t.size )
+          '.'
+        else
+          t(row)(col)
+
+      def to( pair: (Int,Int) ) = {
+        for( i <- (p._1 to pair._1).view ; j <- (p._2 to pair._2).view ) yield (i,j)
+      }
+      def inside( topL: (Int,Int), bottomR: (Int,Int) ) = {
+        topL.row <= row && row <= bottomR.row &&
+        topL.col <= col && col <= bottomR.col
+      }
+    }
+
+    val scan = (0,0) to (t.size,t.size)
+
+    def testSquareAt( topLeft: (Int,Int) ) = {
+      val diagonal = for( inc <- 0 to t.size ) yield (topLeft.row+inc,topLeft.col+inc)
+      val maybeBottomRight = diagonal.find( _.value == '.' ).get
+      val bottomRight = (maybeBottomRight.row-1,maybeBottomRight.col-1)
+
+      val scanForSquare = scan.map( c => c.inside(topLeft,bottomRight) == (c.value == '#') )
+      if( scanForSquare.exists(!_) ) "NO" else "YES"
+    }
+
+    val maybeTopLeft = scan.find( _.value == '#' )
+    if( maybeTopLeft == None ) return "NO" else testSquareAt( maybeTopLeft.get )
+  }
+
+
+  def solveOneTest_9n2(t: LoadedTest): Solution = {
 
     implicit class PairToCoordinate( val p: (Int,Int) ){
       def row = p._1
@@ -60,5 +103,5 @@ object SquareDetector extends App with ContestStub{
 
 
 
-  solveAll()
+  solveAll(".",false)
 }
