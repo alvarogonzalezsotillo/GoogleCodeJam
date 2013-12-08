@@ -28,58 +28,57 @@ object LabelMaker extends App with ContestStub{
   }
 
 
-  object Combinations{
-    def numberOfCombinations( symbols: Int, positions: Int ) : Numero = {
-      symbols.pow(positions)
-    }
-
-    val cache = collection.mutable.Map[(Int,Int), Numero]()
-
-    def numberOfAccumulatedCombinations_nomemo( symbols: Int, positions: Int ) : Numero=  {
-
-      assert( positions >= 0 )
-      if( positions == 0 ){
-        0.toNumero
+  def solveOneTest(loadedTest: LoadedTest) = {
+    object Combinations{
+      def numberOfCombinations( symbols: Int, positions: Int ) : Numero = {
+        symbols.pow(positions)
       }
-      else{
-        val noc = numberOfCombinations(symbols,positions)
-        val noac = numberOfAccumulatedCombinations(symbols,positions-1)
-        log( s"         noc:$noc  noac:$noac  ret:${noc+noac}")
-        noc + noac
-      }
-    }
 
-    def numberOfAccumulatedCombinations( symbols: Int, positions: Int ) : Numero=  {
-      assert( positions >= 0 )
-      if( positions == 0 ){
-        0.toNumero
+      val cache = collection.mutable.Map[(Int,Int), Numero]()
+
+      def numberOfAccumulatedCombinations_nomemo( symbols: Int, positions: Int ) : Numero=  {
+
+        assert( positions >= 0 )
+        if( positions == 0 ){
+          0.toNumero
+        }
+        else{
+          val noc = numberOfCombinations(symbols,positions)
+          val noac = numberOfAccumulatedCombinations(symbols,positions-1)
+          log( s"         noc:$noc  noac:$noac  ret:${noc+noac}")
+          noc + noac
+        }
       }
-      else{
-        cache.get( (symbols,positions) ) match{
-          case Some(ret) =>
-            ret
-          case None =>
-            val noc = numberOfCombinations(symbols,positions)
-            val noac = numberOfAccumulatedCombinations(symbols,positions-1)
-            val ret = noc + noac
-            cache += (symbols,positions) -> ret
-            log( s"         noc:$noc  noac:$noac  ret:${ret}" )
-            ret
+
+      def numberOfAccumulatedCombinations( symbols: Int, positions: Int ) : Numero=  {
+        assert( positions >= 0 )
+        if( positions == 0 ){
+          0.toNumero
+        }
+        else{
+          cache.get( (symbols,positions) ) match{
+            case Some(ret) =>
+              ret
+            case None =>
+              val noc = numberOfCombinations(symbols,positions)
+              val noac = numberOfAccumulatedCombinations(symbols,positions-1)
+              val ret = noc + noac
+              cache += (symbols,positions) -> ret
+              //log( s"         noc:$noc  noac:$noac  ret:${ret}" )
+              ret
+          }
         }
       }
     }
-  }
 
-
-  def solveOneTest(loadedTest: LoadedTest) = {
     val Array(digits, numberS) = loadedTest(0).split( """\s+""")
     val number = numberS.toNumero
     val orderedDigits = digits.sortBy(c=>c)
-    val base = orderedDigits.size ensuring( _ between( Character.MIN_RADIX, Character.MAX_RADIX ) )
+    val base = orderedDigits.size //ensuring( _ between( Character.MIN_RADIX, Character.MAX_RADIX ) )
 
     val solutionSize = {
       var ret = 1
-      while( Combinations.numberOfAccumulatedCombinations(base,ret) <= number ){
+      while( Combinations.numberOfAccumulatedCombinations(base,ret) < number ){
         ret += 1
       }
       ret
@@ -105,5 +104,5 @@ object LabelMaker extends App with ContestStub{
     ret
   }
 
-  solveAll()
+  solveAll(".",false)
 }
