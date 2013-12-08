@@ -63,7 +63,7 @@ object LabelMaker extends App with ContestStub{
             val noac = numberOfAccumulatedCombinations(symbols,positions-1)
             val ret = noc + noac
             cache += (symbols,positions) -> ret
-            log( s"         noc:$noc  noac:$noac  ret:${ret}")
+            log( s"         noc:$noc  noac:$noac  ret:${ret}" )
             ret
         }
       }
@@ -105,5 +105,5 @@ object LabelMaker extends App with ContestStub{
     ret
   }
 
-  solveAll(".",false)
+  solveAll()
 }
