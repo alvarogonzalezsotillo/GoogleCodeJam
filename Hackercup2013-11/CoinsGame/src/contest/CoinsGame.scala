@@ -31,6 +31,9 @@ object CoinsGame extends App with ContestStub{
     val sol1 = P(n,k,c)
     val sol2 = 1+P(n-1,k,c)
     val sol = sol1 min sol2
+    if( sol != CoinsGameHacker(n,k,c) ){
+      log( s"sol:$sol   real:${CoinsGameHacker(n,k,c)} ***********************************************")
+    }
     log( s"sol:$sol   sol1:$sol1  sol2: $sol2")
     sol.toString
   }
