@@ -10,8 +10,12 @@ object MusicCollection extends App{
 
 		def sortest( s: String ) = {
 
-			def substrings(s:String) = Seq("") ++ (for( start <- 0 until s.size ; end <- 1 to s.size ) yield s.slice( start, end ))
-			def better( s1: String, s2: String ) = 	if( s1.size != s2.size ) s1.size < s2.size else s1 < s2
+			def substrings(s:String) = {
+				Seq("") ++ (for( start <- 0 until s.size ; end <- 1 to s.size ) yield s.slice( start, end ))
+			}
+			def better( s1: String, s2: String ) = {
+				if( s1.size != s2.size ) s1.size < s2.size else s1 < s2
+			}
 
 			val restOfSongs = songs.toSet - s
 			def notInRestOfSongs( s:String ) = restOfSongs.forall( !_.contains(s) )
