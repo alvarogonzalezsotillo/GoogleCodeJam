@@ -10,19 +10,14 @@ object MusicCollection extends App{
 
 		def sortest( s: String ) = {
 
-			def substrings(s:String) = for( start <- 0 until s.size ; end <- 1 to s.size ) yield s.slice( start, end )
+			def substrings(s:String) = Seq("") ++ (for( start <- 0 until s.size ; end <- 1 to s.size ) yield s.slice( start, end ))
 			def better( s1: String, s2: String ) = 	if( s1.size != s2.size ) s1.size < s2.size else s1 < s2
 
-			if( songs.size > 1 ){
-				val restOfSongs = songs.toSet - s
-				def notInRestOfSongs( s:String ) = restOfSongs.forall( !_.contains(s) )
-				val found = substrings(s).filter(notInRestOfSongs)
-				val sorted = found.sortWith(better)
-				sorted.headOption.map( s => s""""$s"""").getOrElse( ":(" )
-			}
-			else{
-				""""""""
-			}
+			val restOfSongs = songs.toSet - s
+			def notInRestOfSongs( s:String ) = restOfSongs.forall( !_.contains(s) )
+			val found = substrings(s).filter(notInRestOfSongs)
+			val sorted = found.sortWith(better)
+			sorted.headOption.map( s => s""""$s"""").getOrElse( ":(" )
 		}
 
 		println( s"Case #$t:" )
