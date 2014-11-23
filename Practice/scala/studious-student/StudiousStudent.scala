@@ -6,7 +6,7 @@ object StudiousStudent extends App{
 	val nTests = readLine().toInt
 	(1 to nTests).foreach{ t =>
 		val test = readLine().split(" ").drop(1)
-		val solution = test.sortBy( _ + "z"*10 ).mkString
+		val solution = test.sortWith( (s1,s2) => s1+s2 < s2+s1 ).mkString
 		println( s"case #$t: $solution" );	
 	}
 }
