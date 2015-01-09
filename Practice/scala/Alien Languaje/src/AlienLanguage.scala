@@ -15,7 +15,7 @@ object AlienLanguaje extends App {
      * DUMPS SOLUTION IN THE USUAL FORMAT
      */
     type Solutions[T] = Iterator[T]
-    def dumpSolution[T](solutions: Solutions[T])(dump: (String) => Unit = println) = {
+    def dumpSolution[T](solutions: Solutions[T])(dump: (String) => Unit) = {
         solutions.toList.zipWithIndex.map {
             case (sol, cas) => dump("Case #" + (cas + 1) + ": " + sol)
         }
@@ -31,7 +31,7 @@ object AlienLanguaje extends App {
     /**
      * OPENS A FILE, PROCESSES IT AND DUMPS THE SOLUTION TO A FILE AND STANDARD OUTPUT
      */
-    def processFile[T](solveProblem: (LineIterator => Solutions[T]))(file: String = "-") = {
+    def processFile[T](solveProblem: (LineIterator => Solutions[T]))(file: String ) = {
         val in = inputStream2LineInterator(if (file != "-")
             new FileInputStream(file)
         else
