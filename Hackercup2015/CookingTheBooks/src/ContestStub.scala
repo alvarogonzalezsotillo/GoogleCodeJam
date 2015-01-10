@@ -1,4 +1,4 @@
-package contest
+
 
 trait ContestStub{
   import java.io._

@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="scala-library">
+    <CLASSES>
+      <root url="jar:///usr/share/scala/lib/scala-actors-migration_2.11-1.1.0.jar!/" />
+      <root url="jar:///usr/share/scala/lib/scala-swing_2.11-1.0.1.jar!/" />
+      <root url="jar:///usr/share/scala/lib/scala-library.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="file:///usr/share/scala/doc/tools" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar:///usr/share/scala/lib/scala-library-src.jar!/" />
+    </SOURCES>
+  </library>
+</component>
