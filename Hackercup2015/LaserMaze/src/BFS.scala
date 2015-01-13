@@ -7,7 +7,10 @@ import scala.annotation.tailrec
  */
 
 
-
+/**
+ *
+ * @tparam T CAUTION: define equals and hashCode on T !!!!
+ */
 trait BFS[T]{
 
   val bfsNodeOrdering = Ordering.by( (n: BFSNode) => n.node.toString )
@@ -80,8 +83,10 @@ object BFS{
       }
     }
 
-    val _nodesToExpand = new collection.mutable.TreeSet()(nodeOrdering)
-    val _expandedNodes = collection.mutable.Set[BFSNode]()
+    val _nodesToExpand : collection.mutable.SortedSet[BFSNode] = new collection.mutable.TreeSet()(nodeOrdering)
+
+    val _expandedNodes : collection.mutable.Set[BFSNode] = new collection.mutable.HashSet[BFSNode]()
+
     val _allNodes = collection.mutable.Map[T, BFSNode]()
 
     _nodesToExpand += getOrCreateNode(0, null)(initial)
@@ -109,17 +114,16 @@ object BFS{
 
     def getOrCreateNode(depth: Long, parent: BFSNode)(n: T): BFSNode = {
       val ret = _allNodes.getOrElseUpdate(n, new BFSNodeImpl(n, depth, parent))
-      if (!_expandedNodes.contains(ret)) {
-        _nodesToExpand += ret
-      }
       ret
     }
 
     object logger{
-      def debug( o: AnyRef ) = {
-
+      def debug( o: => AnyRef ) = {
+        //println( o )
       }
-      val error = debug _
+      def error( o: => AnyRef )  = {
+        println( o )
+      }
     }
 
     def nextNodeToExpand: Option[BFSNode] = {
@@ -140,19 +144,25 @@ object BFS{
 
     def expandNode(n: BFSNode): Option[BFSNode] = {
 
-      logger.debug( "expandNode " + n + ": " + n.children.mkString(","))
+      _nodesToExpand -= n
+      _expandedNodes += n
+
+      // TODO: OPTIMIZE THIS, MAYBE WITH ANOTHER Set[T] WITH EXPANDED NODES.node
+      val validChildren = n.children.
+        filterNot(child => _expandedNodes.map(_.node).contains(child.node) )
+
+
+      logger.debug( "expandNode " + n + ": " + validChildren.mkString(","))
 
       if( foundF(n.node) ){
         Some(n)
       }
       else {
-        _nodesToExpand ++= n.children.filterNot(_expandedNodes.contains(_))
-        _nodesToExpand -= n
-        _expandedNodes += n
+        _nodesToExpand ++= validChildren
 
         logger.debug("expandNode: nodesToExpand:" + _nodesToExpand.mkString(","))
 
-        n.children.map(_.node).find(foundF).map(_allNodes)
+        validChildren.map(_.node).find(foundF).map(_allNodes)
       }
     }
 
@@ -160,12 +170,13 @@ object BFS{
 
       @tailrec
       def search_tailrec(limit: Int) : Option[BFSNode] = {
+        logger.debug( "*******************************************" )
         if (limit == 0)
           None
         else nextNodeToExpand match {
           case Some(next) =>
 
-            if( limit % 1000 == 0 ) logger.error( s"limit $limit, expanding $next" )
+            if( limit % 100 == 0 ) logger.error( s"limit $limit, expanding $next" )
 
             expandNode(next) match {
               case Some(n) =>
