@@ -65,7 +65,7 @@ trait ContestStub{
   /**
    * OPENS A FILE, PROCESSES IT AND DUMPS THE SOLUTION TO A FILE AND STANDARD OUTPUT
    */
-  private[this] def solveOneFile(parallel: Boolean)(file: String) = {
+  def solveOneFile(parallel: Boolean)(file: String) = {
 
     log("FILE:" + new File(file).getAbsoluteFile )
     val initTime = System.currentTimeMillis

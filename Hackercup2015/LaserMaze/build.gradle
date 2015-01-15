@@ -1,0 +1,26 @@
+repositories {
+    mavenCentral()
+}
+
+
+apply plugin: 'java'
+apply plugin: 'scala'
+apply plugin: 'application'
+
+dependencies {
+    compile group: 'org.scala-lang', name: 'scala-library', version: '2.11.0'
+}
+
+sourceSets{
+	main{
+		scala{
+			srcDir 'src'
+		}
+	}
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.6'
+}
+
+mainClassName='LaserMaze'

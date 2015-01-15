@@ -122,7 +122,7 @@ object BFS{
         //println( o )
       }
       def error( o: => AnyRef )  = {
-        println( o )
+        //println( o )
       }
     }
 

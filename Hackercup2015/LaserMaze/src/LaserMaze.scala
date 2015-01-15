@@ -175,8 +175,8 @@ object LaserMaze extends App with ContestStub {
         val g = t.goal
         val dx = (h._1 - g._1)
         val dy = (h._2 - g._2)
-        dx * dx + dy * dy // ALMOST EUCLIDEAN
-        //Math.abs(dx) + Math.abs(dy) // MANHATAN
+        //Math.sqrt(dx * dx + dy * dy) // EUCLIDEAN
+        Math.abs(dx) + Math.abs(dy) // MANHATAN
       }
 
     }
@@ -200,15 +200,16 @@ object LaserMaze extends App with ContestStub {
 
     ret match {
       case Some(node) =>
-        println(node.node.dumpString)
+        println(node.pathToRoot.size - 1)
         "" + (node.pathToRoot.size - 1)
       case None =>
-        println("imposible")
+        println("impossible")
         "impossible"
     }
   }
 
-  solveAll(".", true)
+  //solveAll(".", true)
+  solveOneFile(false)("solutions.in")
 
 
 }
