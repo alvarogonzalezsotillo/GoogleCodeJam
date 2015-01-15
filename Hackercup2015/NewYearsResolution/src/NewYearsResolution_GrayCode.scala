@@ -16,38 +16,22 @@ object NewYearsResolution_GrayCode extends App {
     def flipBit(index: Int) = setBit(index, !bit(index))
   }
 
-  class GrayCodeIndex {
-    private var _index = 0;
+  object GrayCodeIndex {
+
     private val _l2 = Math.log(2)
 
-    def nextBitPositionChange = {
-      @tailrec
-      def next(i: Int): Int = {
-        @inline def log2(i: Int) = (Math.log(i) / _l2).toInt
-        val b = log2(i)
-        val twoB = 1 << b
-        if (i == twoB) {
-          b
-        }
-        else {
-          next(i - twoB)
-        }
-      }
-      _index += 1
-      next(_index)
+    @tailrec
+    def bitPositionChangeForIndex(i: Int): Int = {
+      assert( i > 0 )
+      @inline def log2(i: Int) = (Math.log(i) / _l2).toInt
+      val b = log2(i)
+      val twoB = 1 << b
+      if (i == twoB) b else bitPositionChangeForIndex(i - twoB)
     }
 
-    def index = _index
-  }
-
-  object GrayCodeIndex {
-    def iterator(bits: Int) = new Iterator[Int] {
-      private val _size = 1 << bits
-      private val _grayCode = new GrayCodeIndex
-      private def index = _grayCode.index
-      override def hasNext = index < _size - 1
-      override def next() = _grayCode.nextBitPositionChange
-    }
+    def iterator(bits: Int) = Iterator.from(1).
+      map(bitPositionChangeForIndex).
+      takeWhile( _ < bits )
   }
 
 
@@ -62,28 +46,27 @@ object NewYearsResolution_GrayCode extends App {
 
   def processFile(file: String) = measure {
 
-    case class Food(p: Int, c: Int, f: Int)
+    case class Food(p: Int, c: Int, f: Int){
+      def +( food: Food ) = Food(p+food.p,c+food.c,f+food.f )
+      def -( food: Food ) = Food(p-food.p,c-food.c,f-food.f )
+    }
 
 
     val in = new Scanner(new File(file))
     val T = in.nextInt()
     for (t <- 1 to T) {
-      val gp, gc, gf = in.nextInt()
+      val gFood = Food( in.nextInt(), in.nextInt(), in.nextInt() )
       val N = in.nextInt()
       val foods = (0 until N).map(_ => Food(in.nextInt(), in.nextInt(), in.nextInt()))
 
       val subsets = GrayCodeIndex.iterator(N).scanLeft( (0, Food(0,0,0)) ){ ( setAndFood: (Int, Food), index:Int ) =>
         val food = foods(index)
         val set = setAndFood._1
-        val include = if (set.bit(index)) -1 else 1
-        val np = setAndFood._2.p + include*food.p
-        val nc = setAndFood._2.c + include*food.c
-        val nf = setAndFood._2.f + include*food.f
-
-        ( set.flipBit(index), Food(np,nc,nf) )
+        val accum = if(set.bit(index)) setAndFood._2 - food else setAndFood._2 + food
+        ( set.flipBit(index), accum )
       }
 
-      val solution = subsets.find{ case (_,food) => food.p == gp && food.c==gc && food.f==gf }
+      val solution = subsets.find{ case (_,food) => food == gFood }
 
       val output = Map(true -> "yes", false -> "no")(solution.isDefined)
       println(s"Case #$t: $output")
