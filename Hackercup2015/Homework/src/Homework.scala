@@ -84,7 +84,6 @@ object Homework extends App{
       val s = solveCase( in.nextInt, in.nextInt, in.nextInt )
       out.println( s"Case #$t: $s")
     }
-
   }
 
   def processFile( file: String ) = {
