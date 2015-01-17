@@ -3,9 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/CookingTheBooks/CookingTheBooks.iml" filepath="$PROJECT_DIR$/CookingTheBooks/CookingTheBooks.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Homework/Homework.iml" filepath="$PROJECT_DIR$/Homework/Homework.iml" />
       <module fileurl="file://$PROJECT_DIR$/LaserMaze/LaserMaze.iml" filepath="$PROJECT_DIR$/LaserMaze/LaserMaze.iml" />
       <module fileurl="file://$PROJECT_DIR$/NewYearsResolution/NewYearsResolution.iml" filepath="$PROJECT_DIR$/NewYearsResolution/NewYearsResolution.iml" />
     </modules>
   </component>
 </project>
-
