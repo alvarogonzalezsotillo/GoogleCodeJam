@@ -80,14 +80,6 @@ object Autocomplete extends App{
           child(s.head).findFirstNotAmbiguousNode(s.tail)
         }
       }
-
-      def dump( level: Int ){
-        val s = children.zipWithIndex.map{ case(c,i) => if(c == null) '_' else ('a'+i).toChar }.mkString
-        log( ("   " * level) + s + "  " + totalChildren )
-        for( c <- children if c != null ){
-          c.dump(level+1)
-        }
-      }
     }
 
 
@@ -96,7 +88,6 @@ object Autocomplete extends App{
     for( w <- words.map( _ + endOfWord) ){
       log( w )
       tree.add(w)
-      //tree.dump(0)
       val n = tree.findFirstNotAmbiguousNode(w)
       log( s"$w --> ${n.depth} ")
       ret += n.depth
