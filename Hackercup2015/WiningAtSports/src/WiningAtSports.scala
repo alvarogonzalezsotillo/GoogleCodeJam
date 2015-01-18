@@ -28,12 +28,12 @@ Explanation of Sample
 In the third test case, you can get a stress-free win by scoring points 1, 2, and 4, or points 1, 2, and 3. You can get a stressful win by scoring points 2, 4, and 5, or points 3, 4, and 5.
  *
  */
-object WiningAtSports extends App{
+object WiningAtSports extends App {
 
   val modulo = 1000000007
 
-  def log( s : => String ){
-    //System.err.println( s )
+  def log(s: => String) {
+    System.err.println( s )
   }
 
   def measure[T](proc: => T) = {
@@ -44,12 +44,11 @@ object WiningAtSports extends App{
     ret
   }
 
+  object stressFree extends ((Int, Int) => Int) {
 
-  object stressFree extends ((Int,Int) => Int){
+    private val cache = scala.collection.mutable.Map[(Int, Int), Int]()
 
-    private val cache = scala.collection.mutable.Map[(Int,Int),Int]()
-
-    def apply ( mine: Int, theirs: Int ) : Int = {
+    def apply(mine: Int, theirs: Int): Int = {
 
       if (mine == theirs) {
         0
@@ -60,29 +59,59 @@ object WiningAtSports extends App{
       else if (theirs == 0) {
         1
       }
-      else{
-        cache.getOrElseUpdate((mine, theirs), (apply(mine - 1, theirs) + apply(mine, theirs - 1) ) % modulo )
+      else {
+        cache.getOrElseUpdate((mine, theirs), (apply(mine - 1, theirs) + apply(mine, theirs - 1)) % modulo)
+      }
+    }
+  }
+
+
+  object stressFull extends ((Int, Int) => Int) {
+
+    private val cache = scala.collection.mutable.Map[(Int, Int), Int]()
+
+    def apply(mine: Int, theirs: Int): Int = {
+
+      if (mine == theirs) {
+        0
+      }
+      else if (mine == 0) {
+        0
+      }
+      else if (theirs == 0) {
+        1
+      }
+      else if (theirs == 1) {
+        1
+      }
+      else if (mine - theirs > 1) {
+        // THIS LEADS TO https://oeis.org/A000108
+        cache.getOrElseUpdate((mine, theirs), apply(theirs + 1, theirs))
+      }
+      else {
+        assert( mine-1 == theirs, s"mine:$mine theirs:$theirs" )
+        cache.getOrElseUpdate((mine, theirs), stressFree(mine, theirs))
       }
     }
 
 
   }
 
-
-  def solveFile( in: Scanner, out: PrintStream ) = {
+  def solveFile(in: Scanner, out: PrintStream) = {
     val T = in.nextLine().toInt
-    log( s"$T cases")
-    for( t <- 1 to T ){
-      val Array(mine,theirs) = in.nextLine.split("""\\s+|-""").map( _.toInt )
-      val free = stressFree(mine,theirs)
-      out.println( s"Case #$t: $free")
+    log(s"$T cases")
+    for (t <- 1 to T) {
+      val Array(mine, theirs) = in.nextLine.split( """\\s+|-""").map(_.toInt)
+      val free = stressFree(mine, theirs)
+      val full = stressFull(mine, theirs)
+      out.println(s"Case #$t: $free $full")
     }
   }
 
-  def processFile( file: String ){
-    log( s"Processing: $file" )
-    val in = new Scanner( new File(file) )
-    val out = new PrintStream( new FileOutputStream( file + ".out" ) )
+  def processFile(file: String) {
+    log(s"Processing: $file")
+    val in = new Scanner(new File(file))
+    val out = new PrintStream(new FileOutputStream(file + ".out"))
     measure {
       solveFile(in, out)
     }
@@ -90,7 +119,15 @@ object WiningAtSports extends App{
     out.close()
   }
 
-  (new File(".")).list().filter( _.toLowerCase endsWith ".in").foreach(processFile)
 
+/*
+  for (m <- 0 to 2000 by 100) {
+    for( t <- 0 until m by 50 ) {
+      println(s"$m,$t stressFree:${stressFree(m, t)}  stressFull:${stressFull(m,t)}")
+    }
+  }
+*/
+
+  (new File(".")).list().filter(_.toLowerCase endsWith ".in").foreach(processFile)
 
 }
