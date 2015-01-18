@@ -96,7 +96,7 @@ object Autocomplete extends App{
     for( w <- words.map( _ + endOfWord) ){
       log( w )
       tree.add(w)
-      tree.dump(0)
+      //tree.dump(0)
       val n = tree.findFirstNotAmbiguousNode(w)
       log( s"$w --> ${n.depth} ")
       ret += n.depth

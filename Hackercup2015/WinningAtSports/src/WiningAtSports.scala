@@ -120,13 +120,14 @@ object WiningAtSports extends App {
   }
 
 
-/*
+
+  // Some precalculations to avoid stack overflow
   for (m <- 0 to 2000 by 100) {
     for( t <- 0 until m by 50 ) {
       println(s"$m,$t stressFree:${stressFree(m, t)}  stressFull:${stressFull(m,t)}")
     }
   }
-*/
+
 
   (new File(".")).list().filter(_.toLowerCase endsWith ".in").foreach(processFile)
 

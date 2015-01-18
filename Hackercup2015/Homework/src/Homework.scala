@@ -29,13 +29,15 @@ Constraints
  */
 object Homework extends App{
 
-  def log( s : => String ) = System.err.println( s )
+  def log( s : => String ) = {
+    //System.err.println( s )
+  }
 
   def measure[T](proc: => T) = {
     val ini = System.currentTimeMillis
     val ret = proc
     val end = System.currentTimeMillis
-    log(s"${end - ini} ms")
+    System.err.println(s"${end - ini} ms")
     ret
   }
 
@@ -43,19 +45,38 @@ object Homework extends App{
   val limit = 1e7.toInt + 1
 
   object isPrime extends (Int=>Boolean){
-    lazy val notPrimes = {
+    lazy val notPrimes = measure {
       val a = new util.BitSet()
       for (step <- 2 to limit ; i <- step*2 to limit by step) {
         a.set(i)
       }
+      System.err.println( s"Eratostenes computed")
       a
     }
 
     def apply( index : Int ) = !notPrimes.get(index)
   }
 
+  val primes = measure {
+    val primes = (2 to limit).filter(isPrime).toArray
+    System.err.println( s"number of primes up to $limit:${primes.size}")
+    primes
+  }
 
-  def primacity( n : Int ) = {
+
+  object primacity extends ((Int) => Int){
+    lazy val primacities = {
+      val primacities = new Array[Int](limit+1)
+      for( p <- primes ; index <- p to limit by p ){
+        primacities(index) += 1
+      }
+      primacities
+    }
+    override def apply(i: Int) = primacities(i)
+  }
+
+
+  def primacity_lammer( n : Int ) = {
     var remaining = n
     var ret = 0
     var d = 2
@@ -72,6 +93,7 @@ object Homework extends App{
     log( s"primacity $n: $ret ")
     ret
   }
+
 
   def solveCase( a: Int, b: Int, k: Int ) = {
     log( s"a:$a b:$b k:$k")
@@ -96,6 +118,7 @@ object Homework extends App{
     in.close()
     out.close()
   }
+
 
 
   (new File(".")).list().filter( _.toLowerCase endsWith ".in").foreach(processFile)
