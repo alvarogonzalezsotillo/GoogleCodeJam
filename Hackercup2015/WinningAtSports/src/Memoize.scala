@@ -13,6 +13,11 @@ object Memoize {
     ret
   }
 
+  def prepopulate[X,Y]( f:(X)=>Y, it: Iterator[X] ) = {
+    it.foreach(f)
+    f
+  }
+
 }
 
 object MemoizeTest extends App{
