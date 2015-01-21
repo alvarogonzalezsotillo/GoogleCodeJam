@@ -119,10 +119,10 @@ object CorporateGifting extends App {
   }
 
   def processFile(file: String) {
-    System.err.println(s"Processing: $file")
+    log(s"Processing: $file")
     val in = new Scanner(new File(file))
     val out = new PrintStream(new FileOutputStream(file + ".out"))
-    measure {
+    measure(s"file:$file") {
       solveFile(in, out)
     }
     in.close()
