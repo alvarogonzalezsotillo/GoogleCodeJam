@@ -57,9 +57,8 @@ object CorporateGifting extends App {
   def corporateGifting(hierarchy: Array[Int]) = {
     val n = hierarchy.size
 
+    // 0-based indexes are much easier
     for( i <- 0 until hierarchy.size ) hierarchy(i) -= 1
-
-    val adjacency : Array[List[Int]] = Array.fill(n)( Nil )
 
     // Compute depths
     val depth = measure( "Depths" ) {
@@ -75,10 +74,12 @@ object CorporateGifting extends App {
     log( "Depths:" + depth.mkString(",") )
 
     // Build adjacency lists
-    measure( "Adjacency") {
+    val adjacency = measure( "Adjacency" ){
+      val adj : Array[List[Int]] = Array.fill(n)( Nil )
       for (i <- 0 until n if hierarchy(i) != -1 ) {
-        adjacency(hierarchy(i)) = i :: adjacency(hierarchy(i))
+        adj(hierarchy(i)) = i :: adj(hierarchy(i))
       }
+      adj
     }
     log( "Adjacency:" + adjacency.mkString("\n") )
 
@@ -93,15 +94,13 @@ object CorporateGifting extends App {
       val maxColor = log2(n) + 1
       val invalidCost = -1
       val maxCostForEmployeeTree = Array.fill(n + 1, maxColor + 1)(invalidCost)
-      for (emp <- employeesSortedByDepth) {
-        for (color <- 1 to maxColor) {
-          def minOfSubtree(employeeSubtree: Int) = {
-            val ret = (1 to maxColor).filter(_ != color).map(maxCostForEmployeeTree(employeeSubtree)).min
-            ret ensuring (_ != invalidCost)
-          }
-          val sumOfSubtrees = adjacency(emp).map(minOfSubtree).sum
-          maxCostForEmployeeTree(emp)(color) = color + sumOfSubtrees
+      for (emp <- employeesSortedByDepth; color <- 1 to maxColor) {
+        def minOfSubtree(employeeSubtree: Int) = {
+          val ret = (1 to maxColor).filter(_ != color).map(maxCostForEmployeeTree(employeeSubtree)).min
+          ret ensuring (_ != invalidCost)
         }
+        val sumOfSubtrees = adjacency(emp).map(minOfSubtree).sum
+        maxCostForEmployeeTree(emp)(color) = color + sumOfSubtrees
       }
       (1 to maxColor).map( maxCostForEmployeeTree(0) ).min
     }
@@ -130,8 +129,5 @@ object CorporateGifting extends App {
     out.close()
   }
 
-
-
   (new File(".")).list().filter(_.toLowerCase endsWith ".in").foreach(processFile)
-
 }
